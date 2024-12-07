@@ -1,0 +1,18 @@
+services:
+{% for svc in services %}
+
+    {{ svc.name }}:
+        image: {{ svc.image }}
+        ports:
+            - "{{5000 + loop.index0}}:{{ svc.expose }}"
+
+        {% if "www" in svc %}
+        labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.{{svc.name}}.rule=Host(`{{ svc.www }}`)"
+        - "traefik.http.services.{{svc.name}}.loadbalancer.server.port={{ svc.expose }}"
+        - "traefik.http.routers.{{svc.name}}.entrypoints=websecure"
+        - "traefik.http.routers.{{svc.name}}.tls=true"
+        - "traefik.http.routers.{{svc.name}}.tls.certresolver=le"
+        {% endif %}
+{% endfor %}

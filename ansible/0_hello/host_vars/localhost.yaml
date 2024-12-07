@@ -1,0 +1,9 @@
+---
+services:
+  - name: whoami
+    image: traefik/whoami
+    expose: 80
+
+  - name: apache
+    image: httpd
+    expose: 80

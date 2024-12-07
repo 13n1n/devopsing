@@ -1,0 +1,32 @@
+---
+# comments:
+#  - Заводим хост в inventory на localhost
+#  - Настраиваем первичную конфигурацию (таски)
+#    - Установка докера/podman
+#  - Jinja2 - шаблон docker-compose
+#    - 2 niginx
+#    - темплейтинг из переменных host-vars.yaml и group-vars.yaml
+
+- name: Setup containers
+  gather_facts: false
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Install binaries/packages
+      package:
+        name:
+          - podman
+          - docker
+          - docker-compose
+        state: present
+
+    - name: Render compose.yaml
+      template:
+        src: project/compose.yaml.jinja2
+        dest: project/compose.yaml
+
+    - name: Setup containers with compose.yaml
+      community.docker.docker_compose_v2:
+        project_src: project/
+        state: present
