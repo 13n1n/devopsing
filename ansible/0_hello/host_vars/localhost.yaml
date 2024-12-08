@@ -1,8 +1,8 @@
 ---
-services:
+services: #нужны более конкретные имена, для избежания конфликтов в разных ролях
   - name: whoami
-    image: traefik/whoami
-    expose: 80
+    image: traefik/whoami #всегда использовать конкретные версии тега в имеджах
+    expose: 80 #странное решение, указывать только один порт из пары в экспоузах
 
   - name: apache
     image: httpd
