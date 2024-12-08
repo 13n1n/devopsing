@@ -8,25 +8,25 @@
 #    - темплейтинг из переменных host-vars.yaml и group-vars.yaml
 
 - name: Setup containers
-  gather_facts: false
-  hosts: localhost
+  gather_facts: false #Можно выстаивить глобально
+  hosts: localhost #Указывать группу хостов, группа хостов должна быть завязана на некой роли
   connection: local
 
   tasks:
-    - name: Install binaries/packages
-      package:
+    - name: Install binaries/packages #Лучше использовать более осознанное имя
+      package: #Таски по установки пакетов лучше определять по условию дистра. Пример  when: ansible_facts['distribution'] == "Debian"
         name:
           - podman
-          - docker
-          - docker-compose
+          - docker #Лучше ставить его из репы с офф доки https://docs.docker.com/engine/install/debian/
+          - docker-compose #Не нужен. https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html#requirements
         state: present
 
     - name: Render compose.yaml
       template:
-        src: project/compose.yaml.jinja2
-        dest: project/compose.yaml
+        src: project/compose.yaml.jinja2 #шаблоны должны лежать в папке templates. тогда каталог не надо указывать. Можно определять на уровне плейбука или роли
+        dest: project/compose.yaml #дестинейшен должен быть отвязан от репы, желательно иметь абсолютный путь на хосте. Результат работы таски не должен зависить от разных вариаций окружения, например домашнего каталога пользователя. Расширение для джинжи обычно используется .j2
 
     - name: Setup containers with compose.yaml
       community.docker.docker_compose_v2:
-        project_src: project/
+        project_src: project/ #см дестинейшен на этапе рендера
         state: present
