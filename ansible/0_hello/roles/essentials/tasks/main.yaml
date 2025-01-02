@@ -1,0 +1,8 @@
+- name: Install essentials #Лучше использовать более осознанное имя
+  package: #Таски по установки пакетов лучше определять по условию дистра. Пример  when: ansible_facts['distribution'] == "Debian"
+    name:
+      - podman
+      - docker #Лучше ставить его из репы с офф доки https://docs.docker.com/engine/install/debian/
+      - docker-compose #Не нужен
+    state: present
+  become: yes

@@ -1,0 +1,21 @@
+- name: Create tempfile
+  ansible.builtin.file:
+    state: directory
+    path: "/opt/services/"
+    mode: "0755"
+  become: yes
+
+
+- name: Render compose.yaml
+  template:
+    src: compose.yaml.jinja
+    # Расширение для джинжи обычно используется .j2
+    # https://jinja.palletsprojects.com/en/stable/templates/#template-file-extension
+    dest: "/opt/services/compose.yaml"
+  become: yes
+
+
+- name: Setup containers with compose.yaml
+  community.docker.docker_compose_v2:
+    project_src: "/opt/services/"
+    state: present

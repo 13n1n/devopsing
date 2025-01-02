@@ -1,0 +1,22 @@
+{% set isdebug = globals.get("debug", False) %}
+
+# Желательно перенести в роль
+services:
+{% for svc in services %}
+
+    {{ svc.name }}:
+        image: {{ svc.image }}
+        {% if svc.get("debug", isdebug) -%}
+        ports:
+            - "{{5000 + loop.index0}}:{{ svc.expose }}" {# Плохо. Порты надо брать из конфига, неявная скрытая логика ведет к проблемам
+                                                        #  Это только для дебага. #}
+        {% endif %}
+
+        labels:
+        - "services.index={{loop.index0}}"
+        {% if "traefik" in svc %}
+        {%- for name, value in svc.traefik.items() -%}
+        - "traefik.{{name}}={{value}}"
+        {% endfor %}
+        {% endif %}
+{% endfor %}
